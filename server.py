@@ -1,5 +1,5 @@
-"""
-hQd Pays — Payment Processing Server
+﻿"""
+hQd Pays вЂ” Payment Processing Server
 Handles checkout, webhooks, and payment status
 """
 from flask import Flask, request, jsonify, session, send_from_directory, redirect
@@ -81,7 +81,7 @@ class Payment(db.Model):
     callback_url = db.Column(db.String(500))
     success_url  = db.Column(db.String(500))
     fail_url     = db.Column(db.String(500))
-    metadata     = db.Column(db.Text)
+    extra_data   = db.Column(db.Text)  # renamed from metadata (reserved word)
     created_at   = db.Column(db.DateTime, default=datetime.utcnow)
     paid_at      = db.Column(db.DateTime)
 
@@ -127,7 +127,7 @@ def api_key_required(f):
     return d
 
 
-# ── Static ────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Static в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/')
 def index(): return send_from_directory('.', 'index.html')
 
@@ -143,7 +143,7 @@ def static_files(f):
     except: return jsonify({'error': 'Not found'}), 404
 
 
-# ── Auth ──────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Auth в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/api/auth/register', methods=['POST'])
 def auth_register():
     d = request.get_json(silent=True) or {}
@@ -187,7 +187,7 @@ def auth_logout():
     session.clear(); return jsonify({'success': True})
 
 
-# ── API Keys ──────────────────────────────────────────────────────────
+# в”Ђв”Ђ API Keys в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/api/keys', methods=['GET'])
 @login_required
 def get_keys(user):
@@ -221,7 +221,7 @@ def delete_key(user, kid):
     return jsonify({'ok': True})
 
 
-# ── Payments API ──────────────────────────────────────────────────────
+# в”Ђв”Ђ Payments API в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/api/payments/create', methods=['POST'])
 @api_key_required
 def create_payment(user, api_key):
@@ -242,7 +242,7 @@ def create_payment(user, api_key):
         order_id=order_id, user_id=user.id, api_key_id=api_key.id,
         amount=int(amount), description=description[:200],
         callback_url=callback, success_url=success, fail_url=fail,
-        metadata=json.dumps(meta) if meta else None
+        extra_data=json.dumps(meta) if meta else None
     )
     db.session.add(payment); db.session.commit()
 
@@ -272,7 +272,7 @@ def list_payments(user, api_key):
     return jsonify([p.to_dict() for p in payments])
 
 
-# ── Checkout page handler ─────────────────────────────────────────────
+# в”Ђв”Ђ Checkout page handler в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/api/checkout/confirm', methods=['POST'])
 def checkout_confirm():
     """Called when user confirms payment on checkout page."""
@@ -324,7 +324,7 @@ def checkout_info(order_id):
                     'description': p.description, 'status': p.status})
 
 
-# ── Health ────────────────────────────────────────────────────────────
+# в”Ђв”Ђ Health в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
 @app.route('/api/health')
 def health():
     return jsonify({'status': 'ok', 'service': 'hQd Pays'})
