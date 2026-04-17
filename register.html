@@ -1,0 +1,992 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register &#8212; hQd Pays Developer Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#0f0f1a;--bg3:#13131f;
+  --gold:#f59e0b;--gold2:#d97706;--gold3:#fbbf24;
+  --purple:#5b6ef5;--purple2:#4355e8;
+  --white:#ffffff;--muted:#6b7280;--muted2:#9ca3af;
+  --border:rgba(255,255,255,0.07);--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.08);
+  --red:#ef4444;--green:#4ade80;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;line-height:1.6;min-height:100vh}
+
+/* CANVAS */
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+/* LAYOUT */
+.page-wrap{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* LEFT PANEL */
+.left-panel{
+  width:50%;flex-shrink:0;
+  background:linear-gradient(160deg,#0d0d1a 0%,#0a0a0f 100%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:60px 56px;position:relative;overflow:hidden;
+}
+.left-panel::before{
+  content:'';position:absolute;top:-200px;left:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.left-panel::after{
+  content:'';position:absolute;bottom:-150px;right:-100px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(91,110,245,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* LOGO */
+.brand-logo{display:flex;align-items:center;gap:2px;text-decoration:none;font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:40px;position:relative;z-index:1}
+.logo-hqd{color:var(--gold)}
+.logo-pays{color:var(--white)}
+.logo-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;margin:0 1px 10px;display:inline-block}
+
+.left-tagline{font-size:1.6rem;font-weight:800;line-height:1.25;letter-spacing:-0.5px;margin-bottom:12px;position:relative;z-index:1}
+.left-tagline .gold{color:var(--gold)}
+.left-sub{font-size:0.95rem;color:var(--muted2);margin-bottom:40px;line-height:1.65;position:relative;z-index:1}
+
+/* FEATURES LIST */
+.features-list{display:flex;flex-direction:column;gap:14px;margin-bottom:48px;position:relative;z-index:1}
+.feature-item{display:flex;align-items:center;gap:12px;font-size:0.9rem;color:var(--muted2)}
+.feature-item svg{width:18px;height:18px;flex-shrink:0;stroke:var(--gold);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* TESTIMONIAL */
+.testimonial{
+  background:var(--glass);border:1px solid var(--border);
+  border-radius:16px;padding:24px;position:relative;z-index:1;
+  backdrop-filter:blur(10px);
+}
+.testimonial-quote{font-size:0.9rem;color:var(--muted2);line-height:1.65;font-style:italic;margin-bottom:16px}
+.testimonial-quote::before{content:'\201C';color:var(--gold);font-size:1.4rem;font-style:normal;line-height:0;vertical-align:-6px;margin-right:4px}
+.testimonial-author{display:flex;align-items:center;gap:10px}
+.testimonial-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--purple));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#000;flex-shrink:0}
+.testimonial-name{font-size:0.85rem;font-weight:600;color:var(--white)}
+.testimonial-handle{font-size:0.78rem;color:var(--muted)}
+
+/* RIGHT PANEL */
+.right-panel{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:60px 56px;background:var(--bg);position:relative;
+}
+
+/* FORM CARD */
+.form-card{width:100%;max-width:440px}
+.form-state{display:none}
+.form-state.active{display:block}
+
+/* TRANSITIONS */
+.form-state{animation:fadeSlide 0.35s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.form-title{font-size:1.75rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px}
+.form-subtitle{font-size:0.9rem;color:var(--muted2);margin-bottom:32px;line-height:1.55}
+
+/* NOMCHAT BUTTON */
+.btn-nomchat{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:13px 20px;border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(245,158,11,0.4);
+  color:var(--white);font-size:0.95rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+  position:relative;overflow:hidden;
+}
+.btn-nomchat:hover{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.7);transform:translateY(-1px);box-shadow:0 4px 20px rgba(245,158,11,0.15)}
+.btn-nomchat:active{transform:translateY(0)}
+.btn-nomchat .nc-logo{width:22px;height:22px;flex-shrink:0}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--muted);font-size:0.8rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FORM FIELDS */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:0.82rem;font-weight:600;color:var(--muted2);margin-bottom:7px;letter-spacing:0.3px}
+.field input{
+  width:100%;padding:12px 14px;
+  background:var(--glass);border:1px solid var(--border);
+  border-radius:10px;color:var(--white);font-size:0.9rem;font-family:'Inter',sans-serif;
+  transition:border-color 0.2s,box-shadow 0.2s;outline:none;
+}
+.field input:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+.field input::placeholder{color:var(--muted)}
+.field input.error{border-color:rgba(239,68,68,0.6)}
+.field-error{font-size:0.78rem;color:var(--red);margin-top:5px;display:none}
+.field-error.show{display:block}
+
+/* CHECKBOX */
+.checkbox-wrap{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px}
+.checkbox-wrap input[type=checkbox]{width:16px;height:16px;margin-top:2px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.checkbox-wrap label{font-size:0.82rem;color:var(--muted2);line-height:1.5;cursor:pointer}
+.checkbox-wrap a{color:var(--gold);text-decoration:none}
+.checkbox-wrap a:hover{text-decoration:underline}
+
+/* BUTTONS */
+.btn-gold{
+  width:100%;padding:13px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000;font-size:0.95rem;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s;
+  box-shadow:0 0 25px rgba(245,158,11,0.25);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-gold:hover{box-shadow:0 4px 35px rgba(245,158,11,0.45);transform:translateY(-1px)}
+.btn-gold:active{transform:translateY(0)}
+.btn-gold:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+/* SWITCH LINK */
+.switch-link{text-align:center;margin-top:20px;font-size:0.85rem;color:var(--muted2)}
+.switch-link a{color:var(--gold);text-decoration:none;font-weight:600}
+.switch-link a:hover{text-decoration:underline}
+
+.forgot-link{text-align:right;margin-top:-8px;margin-bottom:16px}
+.forgot-link a{font-size:0.8rem;color:var(--muted2);text-decoration:none;transition:color 0.2s}
+.forgot-link a:hover{color:var(--gold)}
+
+/* SPINNER */
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+.spinner.show{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/*  DASHBOARD  */
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+.dash-title{font-size:1.5rem;font-weight:800;letter-spacing:-0.5px}
+.dash-user{display:flex;align-items:center;gap:10px}
+.user-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;font-weight:700;color:#000;flex-shrink:0;
+}
+.user-name{font-size:0.875rem;font-weight:600}
+.user-email{font-size:0.75rem;color:var(--muted2)}
+
+.btn-logout{
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted2);font-size:0.8rem;font-weight:500;
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-logout:hover{border-color:rgba(239,68,68,0.4);color:var(--red)}
+
+.dash-actions{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.dash-section-title{font-size:1rem;font-weight:700}
+.btn-gen{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000;font-size:0.85rem;font-weight:700;
+  padding:9px 18px;border-radius:10px;border:none;cursor:pointer;
+  transition:all 0.2s;box-shadow:0 0 20px rgba(245,158,11,0.2);
+}
+.btn-gen:hover{box-shadow:0 4px 25px rgba(245,158,11,0.4);transform:translateY(-1px)}
+.btn-gen svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* KEYS LIST */
+.keys-list{display:flex;flex-direction:column;gap:10px;max-height:380px;overflow-y:auto;padding-right:4px}
+.keys-list::-webkit-scrollbar{width:4px}
+.keys-list::-webkit-scrollbar-track{background:transparent}
+.keys-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.key-card{
+  background:var(--glass);border:1px solid var(--border);
+  border-radius:12px;padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  transition:border-color 0.2s;
+}
+.key-card:hover{border-color:rgba(245,158,11,0.2)}
+.key-info{flex:1;min-width:0}
+.key-name-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.key-name{font-size:0.875rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.key-badge{
+  font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+  padding:2px 8px;border-radius:100px;flex-shrink:0;
+}
+.key-badge.live{background:rgba(74,222,128,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.25)}
+.key-badge.test{background:rgba(91,110,245,0.12);color:#818cf8;border:1px solid rgba(91,110,245,0.25)}
+.key-value{font-size:0.78rem;color:var(--muted2);font-family:'Fira Code','Consolas',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.key-date{font-size:0.72rem;color:var(--muted);margin-top:3px}
+.key-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--glass2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-icon svg{width:14px;height:14px;stroke:var(--muted2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.2s}
+.btn-icon:hover{border-color:rgba(245,158,11,0.3)}
+.btn-icon:hover svg{stroke:var(--gold)}
+.btn-icon.del:hover{border-color:rgba(239,68,68,0.3)}
+.btn-icon.del:hover svg{stroke:var(--red)}
+
+/* EMPTY STATE */
+.empty-state{
+  text-align:center;padding:48px 24px;
+  border:1px dashed var(--border);border-radius:16px;
+}
+.empty-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+.empty-icon svg{width:28px;height:28px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.empty-title{font-size:1rem;font-weight:700;margin-bottom:6px}
+.empty-sub{font-size:0.85rem;color:var(--muted2);line-height:1.55}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(6px);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:36px;width:100%;max-width:460px;
+  position:relative;animation:modalIn 0.3s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:8px;
+  background:var(--glass2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;
+}
+.modal-close:hover{border-color:rgba(239,68,68,0.3)}
+.modal-close svg{width:14px;height:14px;stroke:var(--muted2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.modal-title{font-size:1.2rem;font-weight:800;margin-bottom:6px}
+.modal-sub{font-size:0.85rem;color:var(--muted2);margin-bottom:28px}
+
+/* ENV SELECTOR */
+.env-selector{display:flex;gap:10px;margin-bottom:20px}
+.env-btn{
+  flex:1;padding:10px;border-radius:10px;
+  background:var(--glass);border:1.5px solid var(--border);
+  color:var(--muted2);font-size:0.85rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;text-align:center;
+}
+.env-btn.active.live{border-color:rgba(74,222,128,0.5);color:#4ade80;background:rgba(74,222,128,0.06)}
+.env-btn.active.test{border-color:rgba(91,110,245,0.5);color:#818cf8;background:rgba(91,110,245,0.06)}
+.env-btn:not(.active):hover{border-color:rgba(255,255,255,0.15);color:var(--white)}
+
+/* KEY REVEAL */
+.key-reveal{
+  background:#0d0d16;border:1px solid rgba(245,158,11,0.25);
+  border-radius:12px;padding:16px;margin:20px 0;display:none;
+}
+.key-reveal.show{display:block}
+.key-reveal-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px}
+.key-reveal-value{
+  font-family:'Fira Code','Consolas',monospace;font-size:0.8rem;
+  color:var(--white);word-break:break-all;line-height:1.6;
+  margin-bottom:10px;
+}
+.key-reveal-copy{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);
+  color:var(--gold);font-size:0.8rem;font-weight:600;
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  transition:all 0.2s;width:fit-content;
+}
+.key-reveal-copy:hover{background:rgba(245,158,11,0.18)}
+.key-reveal-copy svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.key-warning{
+  display:flex;align-items:flex-start;gap:8px;
+  background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);
+  border-radius:10px;padding:12px;font-size:0.8rem;color:var(--gold3);line-height:1.5;
+  margin-top:12px;
+}
+.key-warning svg{width:15px;height:15px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:1px}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:2000;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:12px;padding:14px 18px;
+  display:flex;align-items:center;gap:10px;
+  font-size:0.875rem;font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  transform:translateY(80px);opacity:0;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{width:18px;height:18px;flex-shrink:0}
+.toast.success .toast-icon{stroke:var(--green)}
+.toast.error .toast-icon{stroke:var(--red)}
+.toast.info .toast-icon{stroke:var(--gold)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .page-wrap{flex-direction:column}
+  .left-panel{width:100%;padding:40px 32px;min-height:auto}
+  .right-panel{padding:40px 32px}
+  .left-panel::before,.left-panel::after{display:none}
+}
+@media(max-width:480px){
+  .left-panel,.right-panel{padding:32px 20px}
+  .form-card{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="page-wrap">
+
+  <!--  LEFT PANEL  -->
+  <div class="left-panel">
+    <a href="index.html" class="brand-logo">
+      <span class="logo-hqd">hQd</span><span class="logo-dot"></span><span class="logo-pays">Pays</span>
+    </a>
+
+    <h2 class="left-tagline">Start accepting<br><span class="gold">payments in minutes</span></h2>
+    <p class="left-sub">Join thousands of developers building on the NomChat payment infrastructure. Get your API key and go live today.</p>
+
+    <ul class="features-list">
+      <li class="feature-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Instant API key generation
+      </li>
+      <li class="feature-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        NomChat ID authentication
+      </li>
+      <li class="feature-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        100 free transactions / month
+      </li>
+      <li class="feature-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Real-time webhooks
+      </li>
+      <li class="feature-item">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Full sandbox environment
+      </li>
+    </ul>
+
+    <div class="testimonial">
+      <p class="testimonial-quote">hQd Pays processed our first payment in under 3 minutes. The API is clean, the docs are great, and the sandbox made testing a breeze.</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">DU</div>
+        <div>
+          <div class="testimonial-name">@devuser</div>
+          <div class="testimonial-handle">Full-stack developer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  RIGHT PANEL  -->
+  <div class="right-panel">
+    <div class="form-card">
+
+      <!-- STATE 1: SIGN UP -->
+      <div class="form-state active" id="state-signup">
+        <h1 class="form-title">Create your account</h1>
+        <p class="form-subtitle">Connect with NomChat ID to get started, or register with email.</p>
+
+        <button class="btn-nomchat" id="signup-nomchat-btn" onclick="openNomchatOAuth('signup')">
+          <svg class="nc-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="#f59e0b"/>
+            <path d="M10 28V14l10 8 10-8v14" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Continue with NomChat ID
+          <span class="spinner" id="signup-nc-spinner"></span>
+        </button>
+
+        <div class="divider">or</div>
+
+        <form id="signup-form" onsubmit="handleSignup(event)" novalidate>
+          <div class="field">
+            <label for="signup-name">Full name</label>
+            <input type="text" id="signup-name" placeholder="Alex Developer" autocomplete="name">
+            <div class="field-error" id="err-signup-name">Please enter your name.</div>
+          </div>
+          <div class="field">
+            <label for="signup-email">Email address</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+            <div class="field-error" id="err-signup-email">Please enter a valid email.</div>
+          </div>
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Min. 8 characters" autocomplete="new-password">
+            <div class="field-error" id="err-signup-password">Password must be at least 8 characters.</div>
+          </div>
+          <div class="field">
+            <label for="signup-confirm">Confirm password</label>
+            <input type="password" id="signup-confirm" placeholder="Repeat your password" autocomplete="new-password">
+            <div class="field-error" id="err-signup-confirm">Passwords do not match.</div>
+          </div>
+
+          <div class="checkbox-wrap">
+            <input type="checkbox" id="signup-terms">
+            <label for="signup-terms">I agree to the <a href="../terms.html" target="_blank">Terms of Service</a> and <a href="../privacy.html" target="_blank">Privacy Policy</a></label>
+          </div>
+          <div class="field-error" id="err-signup-terms" style="margin-top:-12px;margin-bottom:14px">You must accept the terms.</div>
+
+          <button type="submit" class="btn-gold" id="signup-btn">
+            <span class="spinner" id="signup-spinner"></span>
+            Create account
+          </button>
+        </form>
+
+        <p class="switch-link">Already have an account? <a href="#" onclick="showState('signin')">Sign in</a></p>
+      </div>
+
+      <!-- STATE 2: SIGN IN -->
+      <div class="form-state" id="state-signin">
+        <h1 class="form-title">Welcome back</h1>
+        <p class="form-subtitle">Sign in to your hQd Pays developer account.</p>
+
+        <button class="btn-nomchat" id="signin-nomchat-btn" onclick="openNomchatOAuth('signin')">
+          <svg class="nc-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="#f59e0b"/>
+            <path d="M10 28V14l10 8 10-8v14" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Continue with NomChat ID
+          <span class="spinner" id="signin-nc-spinner"></span>
+        </button>
+
+        <div class="divider">or</div>
+
+        <form id="signin-form" onsubmit="handleSignin(event)" novalidate>
+          <div class="field">
+            <label for="signin-email">Email address</label>
+            <input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email">
+            <div class="field-error" id="err-signin-email">Please enter a valid email.</div>
+          </div>
+          <div class="field">
+            <label for="signin-password">Password</label>
+            <input type="password" id="signin-password" placeholder="Your password" autocomplete="current-password">
+            <div class="field-error" id="err-signin-password">Please enter your password.</div>
+          </div>
+
+          <div class="forgot-link"><a href="#" onclick="showForgot()">Forgot password?</a></div>
+
+          <button type="submit" class="btn-gold" id="signin-btn">
+            <span class="spinner" id="signin-spinner"></span>
+            Sign in
+          </button>
+        </form>
+
+        <p class="switch-link">Don&apos;t have an account? <a href="#" onclick="showState('signup')">Sign up</a></p>
+      </div>
+
+      <!-- STATE 3: DASHBOARD -->
+      <div class="form-state" id="state-dashboard">
+        <div class="dash-header">
+          <div>
+            <div class="dash-title">Your API Keys</div>
+          </div>
+          <div class="dash-user">
+            <div>
+              <div class="user-avatar" id="dash-avatar">?</div>
+            </div>
+            <div>
+              <div class="user-name" id="dash-name">Developer</div>
+              <div class="user-email" id="dash-email"></div>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div class="dash-actions">
+          <div class="dash-section-title">API Keys <span id="keys-count" style="color:var(--muted);font-weight:400;font-size:0.85rem"></span></div>
+          <button class="btn-gen" onclick="openModal()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Generate new key
+          </button>
+        </div>
+
+        <div id="keys-container"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!--  KEY GENERATION MODAL  -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title">Generate API Key</div>
+    <p class="modal-sub">Create a new key for your application. You can generate separate keys for live and test environments.</p>
+
+    <div class="field">
+      <label for="key-name">Key name</label>
+      <input type="text" id="key-name" placeholder="e.g. My App Production" maxlength="40">
+      <div class="field-error" id="err-key-name">Please enter a key name.</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:0.82rem;font-weight:600;color:var(--muted2);letter-spacing:0.3px">Environment</div>
+    <div class="env-selector">
+      <button class="env-btn active live" id="env-live" onclick="selectEnv('live')">&#9679; Live</button>
+      <button class="env-btn test" id="env-test" onclick="selectEnv('test')">&#9675; Test</button>
+    </div>
+
+    <div class="key-reveal" id="key-reveal">
+      <div class="key-reveal-label">Your new API key</div>
+      <div class="key-reveal-value" id="key-reveal-value"></div>
+      <button class="key-reveal-copy" onclick="copyNewKey()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy key
+      </button>
+      <div class="key-warning">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Save this key  it won&apos;t be shown again. Store it securely in your environment variables.
+      </div>
+    </div>
+
+    <button class="btn-gold" id="gen-btn" onclick="generateKey()" style="margin-top:8px">
+      <span class="spinner" id="gen-spinner"></span>
+      Generate key
+    </button>
+  </div>
+</div>
+
+<!--  TOAST  -->
+<div class="toast" id="toast">
+  <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="toast-icon"></svg>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+//  STATE MANAGEMENT 
+let currentState = 'signup';
+let selectedEnv = 'live';
+let generatedKeyFull = '';
+
+function showState(state) {
+  document.querySelectorAll('.form-state').forEach(el => el.classList.remove('active'));
+  document.getElementById('state-' + state).classList.add('active');
+  currentState = state;
+}
+
+//  SESSION 
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('hqdpays_session') || 'null'); } catch { return null; }
+}
+function setSession(data) {
+  localStorage.setItem('hqdpays_session', JSON.stringify(data));
+}
+function clearSession() {
+  localStorage.removeItem('hqdpays_session');
+}
+
+//  KEYS 
+function getKeys() {
+  try { return JSON.parse(localStorage.getItem('hqdpays_keys') || '[]'); } catch { return []; }
+}
+function saveKeys(keys) {
+  localStorage.setItem('hqdpays_keys', JSON.stringify(keys));
+}
+
+//  INIT 
+window.addEventListener('DOMContentLoaded', () => {
+  const session = getSession();
+  if (session) {
+    loadDashboard(session);
+  }
+  initParticles();
+
+  // Listen for OAuth popup messages
+  window.addEventListener('message', handleOAuthMessage);
+});
+
+//  OAUTH 
+function openNomchatOAuth(mode) {
+  const spinnerId = mode === 'signup' ? 'signup-nc-spinner' : 'signin-nc-spinner';
+  const btnId = mode === 'signup' ? 'signup-nomchat-btn' : 'signin-nomchat-btn';
+  document.getElementById(spinnerId).classList.add('show');
+  document.getElementById(btnId).disabled = true;
+
+  const redirect = encodeURIComponent(window.location.href.split('?')[0]);
+  const url = 'https://nomchat-id.up.railway.app/oauth.html?app_id=hqdpays&redirect=' + redirect;
+  const popup = window.open(url, 'nomchat_oauth', 'width=480,height=640,scrollbars=yes,resizable=yes');
+
+  // Poll for popup close
+  const poll = setInterval(() => {
+    if (!popup || popup.closed) {
+      clearInterval(poll);
+      document.getElementById(spinnerId).classList.remove('show');
+      document.getElementById(btnId).disabled = false;
+    }
+  }, 500);
+}
+
+function handleOAuthMessage(event) {
+  if (!event.data || event.data.type !== 'nomchat_oauth_success') return;
+  const { user } = event.data;
+  if (!user) return;
+
+  const session = {
+    email: user.email || 'user@nomchat.id',
+    name: user.name || user.username || 'NomChat User',
+    avatar: user.avatar || null,
+    provider: 'nomchat',
+    loginAt: Date.now()
+  };
+  setSession(session);
+  loadDashboard(session);
+  showToast('Signed in with NomChat ID', 'success');
+}
+
+//  SIGN UP 
+function handleSignup(e) {
+  e.preventDefault();
+  clearErrors();
+
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+  const terms = document.getElementById('signup-terms').checked;
+
+  let valid = true;
+  if (!name) { showError('signup-name', 'err-signup-name'); valid = false; }
+  if (!email || !isValidEmail(email)) { showError('signup-email', 'err-signup-email'); valid = false; }
+  if (password.length < 8) { showError('signup-password', 'err-signup-password'); valid = false; }
+  if (password !== confirm) { showError('signup-confirm', 'err-signup-confirm'); valid = false; }
+  if (!terms) { document.getElementById('err-signup-terms').classList.add('show'); valid = false; }
+  if (!valid) return;
+
+  setLoading('signup-btn', 'signup-spinner', true);
+
+  // Simulate registration
+  setTimeout(() => {
+    setLoading('signup-btn', 'signup-spinner', false);
+    const session = { email, name, avatar: null, provider: 'email', loginAt: Date.now() };
+    setSession(session);
+    loadDashboard(session);
+    showToast('Account created successfully!', 'success');
+  }, 1200);
+}
+
+//  SIGN IN 
+function handleSignin(e) {
+  e.preventDefault();
+  clearErrors();
+
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+
+  let valid = true;
+  if (!email || !isValidEmail(email)) { showError('signin-email', 'err-signin-email'); valid = false; }
+  if (!password) { showError('signin-password', 'err-signin-password'); valid = false; }
+  if (!valid) return;
+
+  setLoading('signin-btn', 'signin-spinner', true);
+
+  setTimeout(() => {
+    setLoading('signin-btn', 'signin-spinner', false);
+    const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const session = { email, name, avatar: null, provider: 'email', loginAt: Date.now() };
+    setSession(session);
+    loadDashboard(session);
+    showToast('Welcome back!', 'success');
+  }, 1000);
+}
+
+function showForgot() {
+  showToast('Password reset link sent to your email.', 'info');
+}
+
+//  DASHBOARD 
+function loadDashboard(session) {
+  const initials = getInitials(session.name);
+  document.getElementById('dash-avatar').textContent = initials;
+  document.getElementById('dash-name').textContent = session.name;
+  document.getElementById('dash-email').textContent = session.email;
+  renderKeys();
+  showState('dashboard');
+}
+
+function handleLogout() {
+  clearSession();
+  showToast('Logged out successfully.', 'info');
+  setTimeout(() => showState('signin'), 400);
+}
+
+//  KEYS RENDERING 
+function renderKeys() {
+  const keys = getKeys();
+  const container = document.getElementById('keys-container');
+  const countEl = document.getElementById('keys-count');
+  countEl.textContent = keys.length ? '(' + keys.length + ')' : '';
+
+  if (!keys.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        </div>
+        <div class="empty-title">No API keys yet</div>
+        <p class="empty-sub">Generate your first API key to start integrating hQd Pays into your application.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="keys-list">${keys.map(k => renderKeyCard(k)).join('')}</div>`;
+}
+
+function renderKeyCard(k) {
+  const date = new Date(k.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return `
+    <div class="key-card" id="key-${k.id}">
+      <div class="key-info">
+        <div class="key-name-row">
+          <span class="key-name">${escHtml(k.name)}</span>
+          <span class="key-badge ${k.env}">${k.env}</span>
+        </div>
+        <div class="key-value">${escHtml(k.maskedKey)}</div>
+        <div class="key-date">Created ${date}</div>
+      </div>
+      <div class="key-actions">
+        <button class="btn-icon" title="Copy key" onclick="copyKey('${k.id}')">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="btn-icon del" title="Delete key" onclick="deleteKey('${k.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+function copyKey(id) {
+  const keys = getKeys();
+  const k = keys.find(x => x.id === id);
+  if (!k) return;
+  navigator.clipboard.writeText(k.maskedKey).then(() => showToast('Key copied to clipboard', 'success'));
+}
+
+function deleteKey(id) {
+  const keys = getKeys().filter(k => k.id !== id);
+  saveKeys(keys);
+  renderKeys();
+  showToast('API key deleted', 'info');
+}
+
+//  MODAL 
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('key-name').value = '';
+  document.getElementById('key-reveal').classList.remove('show');
+  document.getElementById('gen-btn').textContent = 'Generate key';
+  document.getElementById('gen-btn').disabled = false;
+  document.getElementById('err-key-name').classList.remove('show');
+  selectEnv('live');
+  generatedKeyFull = '';
+  setTimeout(() => document.getElementById('key-name').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  if (generatedKeyFull) renderKeys();
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function selectEnv(env) {
+  selectedEnv = env;
+  document.getElementById('env-live').classList.toggle('active', env === 'live');
+  document.getElementById('env-test').classList.toggle('active', env === 'test');
+}
+
+function generateKey() {
+  const name = document.getElementById('key-name').value.trim();
+  if (!name) {
+    document.getElementById('err-key-name').classList.add('show');
+    document.getElementById('key-name').classList.add('error');
+    return;
+  }
+  document.getElementById('err-key-name').classList.remove('show');
+  document.getElementById('key-name').classList.remove('error');
+
+  setLoading('gen-btn', 'gen-spinner', true);
+  document.getElementById('gen-btn').querySelector('span + *') || null;
+
+  setTimeout(() => {
+    const rawHex = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2,'0')).join('');
+    const prefix = selectedEnv === 'live' ? 'hqd_live_' : 'hqd_test_';
+    const fullKey = prefix + rawHex;
+    const masked = maskKey(fullKey);
+
+    const keyObj = {
+      id: 'k_' + Date.now(),
+      name,
+      key: fullKey,
+      maskedKey: masked,
+      env: selectedEnv,
+      createdAt: Date.now()
+    };
+
+    const keys = getKeys();
+    keys.unshift(keyObj);
+    saveKeys(keys);
+    generatedKeyFull = fullKey;
+
+    document.getElementById('key-reveal-value').textContent = fullKey;
+    document.getElementById('key-reveal').classList.add('show');
+
+    setLoading('gen-btn', 'gen-spinner', false);
+    document.getElementById('gen-btn').textContent = 'Done';
+    document.getElementById('gen-btn').onclick = closeModal;
+
+    showToast('API key generated!', 'success');
+  }, 900);
+}
+
+function copyNewKey() {
+  if (!generatedKeyFull) return;
+  navigator.clipboard.writeText(generatedKeyFull).then(() => showToast('Key copied!', 'success'));
+}
+
+//  HELPERS 
+function maskKey(key) {
+  // Show prefix + first 3 hex chars + bullets + last 4
+  const parts = key.split('_');
+  const prefix = parts.slice(0, 2).join('_') + '_';
+  const hex = parts[2] || '';
+  if (hex.length <= 7) return key;
+  return prefix + hex.slice(0, 3) + '' + hex.slice(-4);
+}
+
+function getInitials(name) {
+  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+}
+
+function isValidEmail(e) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showError(inputId, errId) {
+  document.getElementById(inputId).classList.add('error');
+  document.getElementById(errId).classList.add('show');
+}
+
+function clearErrors() {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
+}
+
+function setLoading(btnId, spinnerId, loading) {
+  const btn = document.getElementById(btnId);
+  const spinner = document.getElementById(spinnerId);
+  if (loading) {
+    btn.disabled = true;
+    spinner.classList.add('show');
+  } else {
+    btn.disabled = false;
+    spinner.classList.remove('show');
+  }
+}
+
+//  TOAST 
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const msgEl = document.getElementById('toast-msg');
+
+  toast.className = 'toast ' + type;
+  msgEl.textContent = msg;
+
+  const paths = {
+    success: '<polyline points="20 6 9 17 4 12"/>',
+    error: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+  };
+  icon.innerHTML = paths[type] || paths.info;
+  icon.setAttribute('stroke', type === 'success' ? '#4ade80' : type === 'error' ? '#ef4444' : '#f59e0b');
+
+  clearTimeout(toastTimer);
+  toast.classList.add('show');
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+//  PARTICLES 
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = ['rgba(245,158,11,', 'rgba(91,110,245,', 'rgba(251,191,36,'];
+
+  for (let i = 0; i < 55; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.8 + 0.4,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      alpha: Math.random() * 0.5 + 0.1,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)]
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.fill();
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 110) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(245,158,11,' + (0.06 * (1 - dist / 110)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+</body>
+</html>
+

@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hQd Pays — Payment Infrastructure by NomChat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #0f0f1a;
+    --bg3: #13131f;
+    --gold: #f59e0b;
+    --gold2: #d97706;
+    --gold3: #fbbf24;
+    --purple: #5b6ef5;
+    --purple2: #4355e8;
+    --white: #ffffff;
+    --muted: #6b7280;
+    --muted2: #9ca3af;
+    --border: rgba(255,255,255,0.07);
+    --glass: rgba(255,255,255,0.04);
+    --glass2: rgba(255,255,255,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── CANVAS ── */
+  #particles-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID BG ── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .grid-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,158,11,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(91,110,245,0.06) 0%, transparent 60%);
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 24px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .header-inner {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-hqd { color: var(--gold); }
+  .logo-pays { color: var(--white); }
+  .logo-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin: 0 1px 8px;
+    display: inline-block;
+  }
+
+  nav { display: flex; align-items: center; gap: 8px; }
+  nav a {
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+  }
+  nav a:hover { color: var(--white); background: var(--glass2); }
+
+  .btn-api {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 9px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 20px rgba(245,158,11,0.3);
+  }
+  .btn-api:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 30px rgba(245,158,11,0.45); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 0 80px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-inner { text-align: center; max-width: 860px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gold3);
+    margin-bottom: 32px;
+    letter-spacing: 0.5px;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  .hero h1 .gold { color: var(--gold); }
+  .hero h1 .purple { color: var(--purple); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--muted2);
+    max-width: 580px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 72px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(245,158,11,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(245,158,11,0.5); }
+  .btn-secondary {
+    background: var(--glass2);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+  /* ── STATS ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 20px 40px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -1px;
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 2px;
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 100px 0; position: relative; z-index: 1; }
+  .section-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--muted2);
+    max-width: 520px;
+    line-height: 1.7;
+  }
+  .section-header { margin-bottom: 60px; }
+
+  /* ── FEATURES ── */
+  #features { background: linear-gradient(180deg, transparent, rgba(91,110,245,0.03) 50%, transparent); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .feature-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(245,158,11,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover { border-color: rgba(245,158,11,0.25); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .feature-icon svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+  .feature-card p { font-size: 0.9rem; color: var(--muted2); line-height: 1.65; }
+
+  /* ── HOW IT WORKS ── */
+  #how { background: var(--bg2); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; position: relative; }
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 36px; left: 16.66%; right: 16.66%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.3;
+  }
+  .step {
+    padding: 40px 32px;
+    text-align: center;
+    position: relative;
+  }
+  .step-num {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    font-size: 1.5rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 30px rgba(245,158,11,0.4);
+    position: relative;
+    z-index: 1;
+  }
+  .step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+  .step p { font-size: 0.9rem; color: var(--muted2); line-height: 1.65; }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+  .pricing-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 32px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pricing-card.featured {
+    border-color: rgba(245,158,11,0.4);
+    background: rgba(245,158,11,0.05);
+    box-shadow: 0 0 60px rgba(245,158,11,0.1);
+  }
+  .pricing-card:hover { transform: translateY(-4px); }
+  .pricing-badge {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pricing-tier { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+  .pricing-price { font-size: 2.8rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 4px; }
+  .pricing-price span { font-size: 1rem; font-weight: 500; color: var(--muted2); letter-spacing: 0; }
+  .pricing-desc { font-size: 0.875rem; color: var(--muted2); margin-bottom: 28px; }
+  .pricing-features { list-style: none; margin-bottom: 32px; }
+  .pricing-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: var(--muted2);
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pricing-features li:last-child { border-bottom: none; }
+  .pricing-features li svg { width: 16px; height: 16px; stroke: var(--gold); fill: none; stroke-width: 2.5; flex-shrink: 0; }
+  .btn-plan {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+  }
+  .btn-plan-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-plan-outline:hover { border-color: rgba(245,158,11,0.4); color: var(--gold); }
+  .btn-plan-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    box-shadow: 0 0 25px rgba(245,158,11,0.3);
+  }
+  .btn-plan-gold:hover { box-shadow: 0 4px 35px rgba(245,158,11,0.5); transform: translateY(-1px); }
+
+  /* ── CODE SECTION ── */
+  #code-section { background: var(--bg2); }
+  .code-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .code-text .section-sub { max-width: 100%; }
+  .code-features { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .code-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--muted2);
+  }
+  .code-feature-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .code-block {
+    background: #0d0d16;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-dots { display: flex; gap: 7px; }
+  .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .code-dot.red { background: #ff5f57; }
+  .code-dot.yellow { background: #febc2e; }
+  .code-dot.green { background: #28c840; }
+  .code-filename { font-size: 0.78rem; color: var(--muted); font-family: 'Inter', monospace; }
+  .code-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .code-copy:hover { color: var(--gold); }
+  pre {
+    padding: 28px 24px;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  }
+  .tok-kw { color: #c792ea; }
+  .tok-fn { color: #82aaff; }
+  .tok-str { color: #c3e88d; }
+  .tok-num { color: #f78c6c; }
+  .tok-key { color: var(--gold3); }
+  .tok-cmt { color: #546e7a; font-style: italic; }
+  .tok-obj { color: #89ddff; }
+  .tok-op { color: #89ddff; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 60px 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .footer-brand p { font-size: 0.875rem; color: var(--muted); margin-top: 12px; max-width: 260px; line-height: 1.6; }
+  .footer-links h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { font-size: 0.875rem; color: var(--muted2); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-bottom p { font-size: 0.8rem; color: var(--muted); }
+  .footer-bottom a { color: var(--gold); text-decoration: none; }
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.78rem;
+    color: #4ade80;
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 100px;
+    padding: 5px 12px;
+  }
+  .status-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: pulse-dot 2s infinite; }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── GLOW ORBS ── */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-gold { background: rgba(245,158,11,0.12); width: 500px; height: 500px; }
+  .orb-purple { background: rgba(91,110,245,0.1); width: 400px; height: 400px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { display: none; }
+    .code-wrapper { grid-template-columns: 1fr; }
+    .stat-item { padding: 16px 24px; }
+    .steps::before { display: none; }
+    .footer-inner { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="grid-bg"></div>
+<canvas id="particles-canvas"></canvas>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <span class="logo-hqd">hQd</span><span class="logo-dot"></span><span class="logo-pays">Pays</span>
+    </a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#developers">Developers</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#docs">Docs</a>
+    </nav>
+    <a href="#" class="btn-api">Get API Key</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="orb orb-gold" style="top:-200px;left:-150px;"></div>
+  <div class="orb orb-purple" style="top:100px;right:-100px;"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-badge reveal">
+        <span class="hero-badge-dot"></span>
+        Now in Public Beta — Join 10,000+ developers
+      </div>
+      <h1 class="reveal reveal-delay-1">
+        The payment infrastructure<br>for the <span class="gold">NomChat</span> <span class="purple">ecosystem</span>
+      </h1>
+      <p class="hero-sub reveal reveal-delay-2">
+        Accept payments in milliseconds. Built for developers who need fast, secure, and reliable payment processing — powered by NomChat identity.
+      </p>
+      <div class="hero-ctas reveal reveal-delay-3">
+        <a href="#" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Start accepting payments
+        </a>
+        <a href="#docs" class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Read docs
+        </a>
+      </div>
+      <div class="stats reveal reveal-delay-4">
+        <div class="stat-item">
+          <span class="stat-num" data-target="10000" data-suffix="K+">0</span>
+          <span class="stat-label">Transactions</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="99.9" data-suffix="%" data-float="true">0</span>
+          <span class="stat-label">Uptime SLA</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="100" data-prefix="<" data-suffix="ms">0</span>
+          <span class="stat-label">Avg Latency</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Features</span>
+      <h2 class="section-title">Everything you need to<br>process payments at scale</h2>
+      <p class="section-sub">A complete payment stack — from one-click checkout to enterprise-grade webhooks and analytics.</p>
+    </div>
+    <div class="features-grid">
+
+      <!-- Instant Payments -->
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>Instant Payments</h3>
+        <p>Transactions settle in under 100ms. Real-time confirmation with zero waiting — your users never see a loading spinner.</p>
+      </div>
+
+      <!-- NomChat ID Auth -->
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>NomChat ID Auth</h3>
+        <p>Authenticate users with their NomChat identity. No passwords, no friction — just a secure, verified payment flow.</p>
+      </div>
+
+      <!-- Multi-currency -->
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3>Multi-currency</h3>
+        <p>Accept RUB, USD, EUR and more. Automatic conversion rates updated every 60 seconds from live market data.</p>
+      </div>
+
+      <!-- Developer API -->
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Developer API</h3>
+        <p>RESTful API with SDKs for Node.js, Python, Go and PHP. Comprehensive docs, sandbox environment, and live logs.</p>
+      </div>
+
+      <!-- Webhooks -->
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </div>
+        <h3>Webhooks</h3>
+        <p>Instant event delivery to your endpoints. Automatic retries, signature verification, and a full delivery log.</p>
+      </div>
+
+      <!-- Analytics -->
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <h3>Analytics</h3>
+        <p>Real-time revenue dashboards, conversion funnels, and chargeback tracking — all in one clean interface.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section id="how">
+  <div class="container">
+    <div class="section-header reveal" style="text-align:center;">
+      <span class="section-label">How it works</span>
+      <h2 class="section-title">Up and running in minutes</h2>
+      <p class="section-sub" style="margin:0 auto;">Three simple steps from zero to accepting live payments in your app.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">1</div>
+        <h3>Integrate the API</h3>
+        <p>Install our SDK, grab your API key, and make your first test payment in under 5 minutes. Full sandbox included.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">2</div>
+        <h3>User pays with NomChat ID</h3>
+        <p>Your customer authenticates with their NomChat identity — one tap, fully verified, no card details to enter.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num">3</div>
+        <h3>Money in your account</h3>
+        <p>Funds settle instantly to your hQd Pays wallet. Withdraw to your bank anytime with zero hidden fees.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub">No hidden fees. No surprises. Scale from side project to enterprise on the same platform.</p>
+    </div>
+    <div class="pricing-grid">
+
+      <!-- Free -->
+      <div class="pricing-card reveal reveal-delay-1">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">0₽ <span>/ month</span></div>
+        <div class="pricing-desc">Perfect for testing and small projects.</div>
+        <ul class="pricing-features">
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            100 transactions / month
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Sandbox environment
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Basic webhooks
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Community support
+          </li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-outline">Get started free</a>
+      </div>
+
+      <!-- Business -->
+      <div class="pricing-card featured reveal reveal-delay-2">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier">Business</div>
+        <div class="pricing-price">999₽ <span>/ month</span></div>
+        <div class="pricing-desc">For growing apps that need unlimited scale.</div>
+        <ul class="pricing-features">
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Unlimited transactions
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Multi-currency support
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Advanced analytics
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Priority support (24h)
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Custom webhook endpoints
+          </li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-gold">Start Business plan</a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card reveal reveal-delay-3">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price" style="font-size:2rem;">Custom</div>
+        <div class="pricing-desc">Tailored for high-volume platforms and teams.</div>
+        <ul class="pricing-features">
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Volume-based pricing
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Dedicated infrastructure
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            SLA guarantee (99.99%)
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Dedicated account manager
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Custom integrations
+          </li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-outline">Contact sales</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ CODE SECTION ══ -->
+<section id="developers" style="padding-top:0;">
+  <div id="code-section" style="background:var(--bg2);padding:100px 0;">
+    <div class="container">
+      <div class="code-wrapper">
+        <div class="code-text reveal">
+          <span class="section-label">Developers</span>
+          <h2 class="section-title">Built for developers,<br>loved by teams</h2>
+          <p class="section-sub">A clean, predictable API that does exactly what you expect. No magic, no surprises — just reliable payment processing.</p>
+          <div class="code-features">
+            <div class="code-feature"><span class="code-feature-dot"></span>Idempotent requests — safe to retry</div>
+            <div class="code-feature"><span class="code-feature-dot"></span>Typed SDKs for Node, Python, Go, PHP</div>
+            <div class="code-feature"><span class="code-feature-dot"></span>Full sandbox with test card numbers</div>
+            <div class="code-feature"><span class="code-feature-dot"></span>OpenAPI 3.0 spec available</div>
+          </div>
+        </div>
+        <div class="code-block reveal reveal-delay-2">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="code-dot red"></div>
+              <div class="code-dot yellow"></div>
+              <div class="code-dot green"></div>
+            </div>
+            <span class="code-filename">payment.js</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="tok-cmt">// Initialize hQd Pays client</span>
+<span class="tok-kw">import</span> <span class="tok-obj">{ HqdPays }</span> <span class="tok-kw">from</span> <span class="tok-str">'@nomchat/hqdpays'</span><span class="tok-op">;</span>
+
+<span class="tok-kw">const</span> <span class="tok-fn">client</span> <span class="tok-op">=</span> <span class="tok-kw">new</span> <span class="tok-fn">HqdPays</span><span class="tok-op">({</span>
+  <span class="tok-key">apiKey</span><span class="tok-op">:</span> <span class="tok-str">process.env.HQDPAYS_KEY</span>
+<span class="tok-op">});</span>
+
+<span class="tok-cmt">// Create a payment</span>
+<span class="tok-kw">const</span> <span class="tok-fn">payment</span> <span class="tok-op">=</span> <span class="tok-kw">await</span> <span class="tok-fn">client</span><span class="tok-op">.</span><span class="tok-fn">create</span><span class="tok-op">({</span>
+  <span class="tok-key">amount</span><span class="tok-op">:</span>      <span class="tok-num">299</span><span class="tok-op">,</span>
+  <span class="tok-key">currency</span><span class="tok-op">:</span>    <span class="tok-str">'RUB'</span><span class="tok-op">,</span>
+  <span class="tok-key">user_id</span><span class="tok-op">:</span>     <span class="tok-str">'nomchat_user_id'</span><span class="tok-op">,</span>
+  <span class="tok-key">description</span><span class="tok-op">:</span> <span class="tok-str">'Pro Credits Pack'</span>
+<span class="tok-op">});</span>
+
+<span class="tok-cmt">// Handle result</span>
+<span class="tok-kw">if</span> <span class="tok-op">(</span><span class="tok-fn">payment</span><span class="tok-op">.</span><span class="tok-key">status</span> <span class="tok-op">===</span> <span class="tok-str">'success'</span><span class="tok-op">)</span> <span class="tok-op">{</span>
+  <span class="tok-fn">console</span><span class="tok-op">.</span><span class="tok-fn">log</span><span class="tok-op">(</span><span class="tok-str">`Paid: ₽</span><span class="tok-op">${</span><span class="tok-fn">payment</span><span class="tok-op">.</span><span class="tok-key">amount</span><span class="tok-op">}</span><span class="tok-str">`</span><span class="tok-op">);</span>
+<span class="tok-op">}</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer id="docs">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="font-size:1.3rem;">
+          <span class="logo-hqd">hQd</span><span class="logo-dot"></span><span class="logo-pays">Pays</span>
+        </a>
+        <p>The payment infrastructure for the NomChat ecosystem. Fast, secure, and built for developers.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Developers</h4>
+        <ul>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">SDKs</a></li>
+          <li><a href="#">Webhooks</a></li>
+          <li><a href="#">Sandbox</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="https://nomchat.ru">NomChat</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 <a href="#">hQd Pays</a> by <a href="https://nomchat.ru">NomChat</a>. All rights reserved.</p>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        All systems operational
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ══ PARTICLES ══
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = { x: -9999, y: -9999 };
+  const COUNT = 80, MAX_DIST = 130, SPEED = 0.4;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function Particle() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * SPEED;
+    this.vy = (Math.random() - 0.5) * SPEED;
+    this.r = Math.random() * 1.8 + 0.6;
+    this.alpha = Math.random() * 0.5 + 0.2;
+  }
+
+  Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+    // subtle mouse repulsion
+    const dx = this.x - mouse.x, dy = this.y - mouse.y;
+    const d = Math.sqrt(dx*dx + dy*dy);
+    if (d < 80) {
+      this.x += dx / d * 1.2;
+      this.y += dy / d * 1.2;
+    }
+  };
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.update();
+      // draw dot
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(245,158,11,${p.alpha})`;
+      ctx.fill();
+      // draw lines to nearby particles
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x, dy = p.y - q.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < MAX_DIST) {
+          const opacity = (1 - dist / MAX_DIST) * 0.18;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(245,158,11,${opacity})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  init();
+  draw();
+})();
+
+// ══ SCROLL REVEAL ══
+(function() {
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(el => io.observe(el));
+})();
+
+// ══ COUNTER ANIMATION ══
+(function() {
+  const counters = document.querySelectorAll('.stat-num[data-target]');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseFloat(el.dataset.target);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const isFloat = el.dataset.float === 'true';
+      const duration = 1800;
+      const start = performance.now();
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const val = target * ease;
+        if (isFloat) {
+          el.textContent = prefix + val.toFixed(1) + suffix;
+        } else if (target >= 1000) {
+          el.textContent = prefix + Math.floor(val / 1000) + 'K+';
+        } else {
+          el.textContent = prefix + Math.floor(val) + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => io.observe(c));
+})();
+
+// ══ COPY CODE ══
+function copyCode(btn) {
+  const code = `import { HqdPays } from '@nomchat/hqdpays';
+
+const client = new HqdPays({
+  apiKey: process.env.HQDPAYS_KEY
+});
+
+const payment = await client.create({
+  amount:      299,
+  currency:    'RUB',
+  user_id:     'nomchat_user_id',
+  description: 'Pro Credits Pack'
+});
+
+if (payment.status === 'success') {
+  console.log(\`Paid: ₽\${payment.amount}\`);
+}`;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.color = '#4ade80';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
+  });
+}
+
+// ══ HEADER SCROLL EFFECT ══
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('header');
+  if (window.scrollY > 40) {
+    header.style.background = 'rgba(10,10,15,0.92)';
+  } else {
+    header.style.background = 'rgba(10,10,15,0.7)';
+  }
+});
+</script>
+</body>
+</html>
