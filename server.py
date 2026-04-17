@@ -319,7 +319,23 @@ def checkout_cancel():
 @app.route('/api/checkout/info/<order_id>')
 def checkout_info(order_id):
     p = Payment.query.filter_by(order_id=order_id).first()
-    if not p: return jsonify({'error': 'Not found'}), 404
+    if p:
+        return jsonify({'order_id': p.order_id, 'amount': p.amount,
+                        'description': p.description, 'status': p.status})
+
+    # Auto-create from URL params (when called from external platform)
+    amount      = request.args.get('amount', type=int)
+    description = request.args.get('description', 'Payment')
+    callback    = request.args.get('callback', '')
+    success     = request.args.get('success', '')
+    fail        = request.args.get('fail', '')
+
+    if not amount:
+        return jsonify({'error': 'Not found'}), 404
+
+    p = Payment(order_id=order_id, amount=amount, description=description,
+                callback_url=callback, success_url=success, fail_url=fail)
+    db.session.add(p); db.session.commit()
     return jsonify({'order_id': p.order_id, 'amount': p.amount,
                     'description': p.description, 'status': p.status})
 
